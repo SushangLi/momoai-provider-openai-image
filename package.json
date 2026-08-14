@@ -1,0 +1,43 @@
+{
+  "name": "momoai-provider-openai-image",
+  "version": "0.1.0",
+  "description": "MOMOAI provider executor for OpenAI-compatible image generation APIs",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "examples",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "check": "npm run test"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SushangLi/momoai-provider-openai-image.git"
+  },
+  "keywords": [
+    "momoai",
+    "a2a",
+    "openai",
+    "image-generation"
+  ]
+}

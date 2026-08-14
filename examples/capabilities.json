@@ -1,0 +1,37 @@
+[
+  {
+    "id": "generate_image",
+    "name": "GPT Image 2 生图",
+    "description": "根据文本提示词生成一张 PNG 图片。支持正方形、横向和竖向画幅。",
+    "fixedTokens": 20000,
+    "enabled": true,
+    "inputModes": ["application/json", "text/plain"],
+    "outputModes": ["image/png"],
+    "formatContract": {
+      "type": "image_generation",
+      "version": 1,
+      "input": {
+        "mediaTypes": ["application/json", "text/plain"],
+        "schema": {
+          "type": "object",
+          "required": ["prompt"],
+          "properties": {
+            "prompt": { "type": "string", "minLength": 1, "maxLength": 4000 },
+            "aspect_ratio": { "type": "string", "enum": ["1:1", "3:2", "2:3"] },
+            "quality": { "type": "string", "enum": ["low", "medium", "high"] }
+          }
+        }
+      },
+      "output": {
+        "mediaTypes": ["image/png"],
+        "count": 1
+      },
+      "ui": {
+        "aspectRatios": ["1:1", "3:2", "2:3"],
+        "qualities": ["low", "medium", "high"],
+        "defaultAspectRatio": "1:1",
+        "defaultQuality": "medium"
+      }
+    }
+  }
+]
