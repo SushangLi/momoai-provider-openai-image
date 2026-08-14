@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { mkdtemp, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { execute } from '../dist/index.js';
 
@@ -76,4 +79,20 @@ test('rejects non-PNG provider output before upload', async (t) => {
 
 test('requires the invocation token used for caller-owned assets', async () => {
   await assert.rejects(() => execute({ ...input(), invocationToken: undefined }), /invocation token/);
+});
+
+test('loads a provider key from a local-only file', async (t) => {
+  const directory = await mkdtemp(join(tmpdir(), 'momoai-image-provider-'));
+  const keyFile = join(directory, 'provider-key');
+  await writeFile(keyFile, 'local-provider-key\n', { mode: 0o600 });
+  let authorization;
+  t.mock.method(globalThis, 'fetch', async (url, init) => {
+    if (String(url).includes('/images/generations')) {
+      authorization = init.headers.Authorization;
+      return Response.json({ data: [{ b64_json: Buffer.from(png).toString('base64') }] });
+    }
+    return Response.json({ success: true, data: { id: 'asset-8', access_url: '/api/media/asset-8/content' } });
+  });
+  await execute({ ...input(), options: { ...input().options, apiKeyFile: keyFile } });
+  assert.equal(authorization, 'Bearer local-provider-key');
 });

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+
 const PROTOCOL_VERSION = 'momoai.provider-executor.v1';
 const DEFAULT_MODEL = 'gpt-image-2';
 const DEFAULT_PROVIDER_BASE_URL = 'https://api.openai.com/v1';
@@ -35,6 +37,27 @@ function stringOption(options: UnknownRecord, key: string, fallback: string) {
 function positiveNumber(value: unknown, fallback: number) {
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function resolveApiKey(options: UnknownRecord) {
+  const apiKeyEnv = stringOption(options, 'apiKeyEnv', 'OPENAI_API_KEY');
+  const fromEnvironment = process.env[apiKeyEnv]?.trim();
+  if (fromEnvironment) return fromEnvironment;
+
+  const apiKeyFile = stringOption(
+    options,
+    'apiKeyFile',
+    process.env.MOMOAI_IMAGE_API_KEY_FILE || ''
+  );
+  if (!apiKeyFile) return undefined;
+  try {
+    const fromFile = readFileSync(apiKeyFile, 'utf8').trim();
+    if (!fromFile) throw new Error('file is empty');
+    return fromFile;
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : 'unable to read file';
+    throw new Error(`Unable to load image API key file: ${detail}`);
+  }
 }
 
 function withoutTrailingSlash(value: string) {
@@ -195,8 +218,7 @@ export async function execute(input: ProviderExecutorInput) {
     process.env.MOMOAI_API_URL || DEFAULT_PLATFORM_BASE_URL
   );
   const model = stringOption(options, 'model', process.env.MOMOAI_IMAGE_MODEL || DEFAULT_MODEL);
-  const apiKeyEnv = stringOption(options, 'apiKeyEnv', 'OPENAI_API_KEY');
-  const apiKey = process.env[apiKeyEnv]?.trim();
+  const apiKey = resolveApiKey(options);
   const timeoutMs = positiveNumber(options.timeoutMs, DEFAULT_TIMEOUT_MS);
   const request = normalizeRequest(input);
 

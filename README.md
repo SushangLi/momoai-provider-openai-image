@@ -28,9 +28,10 @@ npm run check
 ## Configure and publish
 
 The example below uses a local cliproxy endpoint. The endpoint does not require
-an API key; for endpoints that do, put the secret in `OPENAI_API_KEY` or set
-`apiKeyEnv` to the name of another environment variable. Never store a secret
-inside `providerExecutorOptions`.
+an API key; for endpoints that do, put the secret in `OPENAI_API_KEY`, set
+`apiKeyEnv` to another environment variable name, or use `apiKeyFile` to point
+at a local file readable only by the provider user. Never put the secret value
+itself inside `providerExecutorOptions`.
 
 ```bash
 momoai agent profile set imagegen \
@@ -66,6 +67,7 @@ result. At an initial listing price of 10 credits per 1,000 tokens, one run is
 | `model` | `MOMOAI_IMAGE_MODEL` | `gpt-image-2` |
 | `platformBaseUrl` | `MOMOAI_API_URL` | `https://momoai.pro` |
 | `apiKeyEnv` | — | `OPENAI_API_KEY` |
+| `apiKeyFile` | `MOMOAI_IMAGE_API_KEY_FILE` | unset |
 | `timeoutMs` | — | `180000` |
 
 Supported aspect ratios map to OpenAI image sizes as follows: `1:1` to
