@@ -2,16 +2,16 @@
   {
     "id": "generate_image",
     "name": "GPT Image 2 生图",
-    "description": "根据文本提示词生成一张 PNG 图片。支持正方形、横向和竖向画幅。",
+    "description": "根据文字或最多 16 张有序参考图生成一张 PNG 图片，支持连续修改。",
     "fixedTokens": 20000,
     "enabled": true,
-    "inputModes": ["application/json", "text/plain"],
+    "inputModes": ["application/json", "text/plain", "image/jpeg", "image/png", "image/webp"],
     "outputModes": ["image/png"],
     "formatContract": {
       "type": "image_generation",
       "version": 1,
       "input": {
-        "mediaTypes": ["application/json", "text/plain"],
+        "mediaTypes": ["application/json", "text/plain", "image/jpeg", "image/png", "image/webp"],
         "schema": {
           "type": "object",
           "required": ["prompt"],
@@ -31,6 +31,17 @@
         "qualities": ["low", "medium", "high"],
         "defaultAspectRatio": "1:1",
         "defaultQuality": "medium"
+      },
+      "imageGeneration": {
+        "referenceImages": {
+          "maxCount": 16,
+          "mimeTypes": ["image/jpeg", "image/png", "image/webp"],
+          "maxBytes": 20971520,
+          "ordered": true
+        }
+      },
+      "billing": {
+        "referenceImageSurchargeTokens": 10000
       }
     }
   }
